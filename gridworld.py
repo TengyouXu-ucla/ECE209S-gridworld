@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 import sys
 import numpy as np
+import matplotlib.pyplot as plt
 
 label_str = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 
@@ -131,5 +132,36 @@ class gridworld:
                     else:
                         self.p_matrix[i,j,k] += 0 # redundant
                         
-                
+def plot_pmatrix(p_matrix, title): 
+    grid_matrix = np.zeros((5,5))
+    
+    for i in range(len(p_matrix)):
+        grid_matrix[i//5,i%5] = p_matrix[i]
+
+    # Flip vertically to adjust for the origin being in the bottom-left corner
+    grid_matrix = np.flipud(grid_matrix)
+
+    label_str = "ABCDEFGHIJKLMNOPQRSTUVWXY"
+    state_labels = np.array(list(label_str)).reshape((5, 5))
+    state_labels = np.flipud(state_labels)  # Flip to match the grid orientation
+
+    # Plot the heatmap
+    plt.imshow(grid_matrix, cmap='viridis', interpolation='nearest')
+    plt.yticks(np.arange(4,-1,-1))
+
+    # Add annotations for each cell with both the state label and probability value
+    for i in range(grid_matrix.shape[0]):
+        for j in range(grid_matrix.shape[1]):
+            # Display state label and probability in each cell
+            plt.text(j, i, f"{state_labels[i, j]}\n{grid_matrix[i, j]:.2f}",
+                    ha='center', va='center', color='white' if grid_matrix[i, j] < 0.5 else 'black')
+
+    # Add a colorbar and title
+
+    plt.xticks(range(5))  # Show x-axis ticks
+    #plt.yticks([4, 3, 2, 1, 0])  # Show y-axis ticks
+    plt.title(title)
+    plt.yticks(ticks=np.arange(grid_matrix.shape[0]), labels=np.flipud(np.arange(grid_matrix.shape[0])))
+
+    plt.show()         
 
